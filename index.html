@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Annibale e Scipione · Il duello</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f6f0e3;
+      --ink: #203638;
+      --navy: #183336;
+      --bronze: #ab743c;
+      --purple: #873f42;
+      --muted: #536361;
+      --line: #d4c7af;
+      --rome-red: #8f1919;
+      --carthage-blue: #1b3558;
+      --gold-bright: #d4af37;
+    }
+    * { box-sizing: border-box; }
+    
+    /* INGRANDIMENTO GLOBALE TESTI PER PRESENTAZIONE (base portata da 16px a 18px) */
+    html { scroll-behavior: smooth; font-size: 18px; }
+    
+    body { margin: 0; width: 100%; color: var(--ink); font-family: 'Source Serif Pro', serif; background: var(--paper); font-size: 1.25rem; }
+    
+    button { cursor: pointer; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid #bd792e; outline-offset: 3px; }
+    
+    .sans, .eyebrow, .meta, button, .small { font-family: 'DM Sans', sans-serif; }
+    .cinzel { font-family: 'Cinzel', serif; }
+    
+    .shell { width: min(100% - 2rem, 1350px); margin-inline: auto; }
+    
+    .eyebrow { font-size: 0.85rem; letter-spacing: 0.17em; text-transform: uppercase; font-weight: 700; color: var(--purple); }
+    
+    .hero { position: relative; isolation: isolate; min-height: 560px; display: flex; align-items: center; overflow: hidden; color: white; background: var(--navy); }
+    .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; filter: saturate(0.7) brightness(0.6); }
+    .hero:before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, #102a2df5 0%, #102a2de8 55%, #102a2d55 100%); }
+    .hero h1 { font-size: clamp(3.5rem, 8vw, 6.5rem); line-height: 1.04; letter-spacing: -0.045em; max-width: 900px; font-family: 'Cinzel', serif; }
+    .hero p { max-width: 700px; }
+    .gold { color: #e9bd76; }
+    
+    .btn, .tool { display: inline-flex; align-items: center; justify-content: center; border-radius: 100px; font-weight: 700; transition: transform 0.2s, background 0.2s; }
+    .btn { padding: 0.9rem 1.4rem; background: var(--purple); color: #fff; border: 1px solid transparent; font-size: 1.05rem; }
+    .btn:hover { transform: translateY(-2px); background: #713538; }
+    .btn.light { background: #fff7e9; color: var(--ink); border-color: var(--line); }
+    .btn.light:hover { background: #eee1ca; }
+    .btn.outline { background: transparent; border-color: #fff; color: #fff; }
+    
+    .tool { padding: 0.75rem 1rem; background: #fffaf0; color: var(--ink); border: 1px solid #bca98c; font-size: 0.95rem; }
+    .tool:hover, .tool[aria-expanded=true], .tool[aria-pressed=true] { background: #dfc9a5; }
+    
+    .topbar { position: sticky; top: 0; z-index: 20; background: #f6f0e3f5; backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    .tabs { display: flex; overflow-x: auto; }
+    .tab { font: 600 0.95rem 'DM Sans', sans-serif; padding: 1.1rem 0.7rem; white-space: nowrap; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); text-transform: uppercase;}
+    .tab[aria-current=step] { border-color: var(--purple); color: var(--purple); font-weight: 700; }
+    .progress { height: 4px; background: #ded2bf; }
+    .progress span { display: block; height: 100%; background: var(--purple); transition: width 0.35s; }
+    
+    .chapter { padding: clamp(2.5rem, 6vw, 5rem) 0; scroll-margin-top: 85px; }
+    .chapter[hidden], [hidden] { display: none !important; }
+    .chapter-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 340px); gap: 2rem; align-items: end; border-bottom: 1px solid var(--line); padding-bottom: 2rem; }
+    .chapter-head h2 { font-size: clamp(2.8rem, 6vw, 5rem); line-height: 1.07; letter-spacing: -0.04em; font-family: 'Cinzel', serif; }
+    .chapter-photo { height: 260px; width: 100%; object-fit: cover; border-radius: 110px 110px 12px 12px; box-shadow: 12px 12px 0 #d6c3a2; }
+    
+    .meta { font-size: 0.95rem; color: var(--muted); font-weight: 600; }
+    .chapter-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(400px, 1.35fr); gap: clamp(2rem, 4vw, 5rem); padding-top: 2rem; align-items: start; }
+    
+    .copy { font-size: 1.25rem; line-height: 1.75; max-width: 73ch; }
+    .copy p { margin: 0 0 1.5rem; }
+    .scene { border-top: 1px solid var(--line); padding-top: 1.5rem; margin-top: 1.6rem; }
+    .scene h3 { font-size: 1.55rem; margin-bottom: 0.8rem; color: #763f32; font-family: 'Cinzel', serif; font-weight: 700; }
+    
+    .quote { border-left: 4px solid var(--bronze); padding: 0.65rem 0 0.65rem 1.4rem; font-size: clamp(1.45rem, 2.5vw, 1.85rem); line-height: 1.4; color: #763f32; font-style: italic; background: #fffaf0; border-radius: 0 12px 12px 0; }
+    
+    .card, .visual { border: 1px solid var(--line); border-radius: 18px; padding: 2rem; }
+    .card { background: #fffaf0; box-shadow: 0 12px 28px #2539360b; }
+    .visual { background: #e9e4d5; }
+    .card h3, .visual h3 { font-size: 1.65rem; font-weight: 700; font-family: 'Cinzel', serif; }
+    
+    .key-list li { margin: 0.75rem 0; line-height: 1.65; font-size: 1.2rem; }
+    
+    /* SFONDI STORICI */
+    #s1 { background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c4/Roman_Forum_overview_2020.jpg'); } 
+    #s2 { background-image: url('https://upload.wikimedia.org/wikipedia/commons/d/d4/The_Alps_with_snow_in_summer.jpg'); } 
+    #s3 { background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/87/Via_Appia_Antica_-_Roma.jpg'); } 
+    #s4 { background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c6/Carthage_National_Museum_%2840003290941%29.jpg'); } 
+    #s5 { background-image: url('image_6fa6f8.jpg'), url('elefanti.jpg'), url('https://upload.wikimedia.org/wikipedia/commons/1/1d/Sahara_desert.jpg'); background-size: cover; background-position: center; }
+
+    .overlay-dim { 
+      position: absolute; inset: 0; 
+      background: radial-gradient(circle at center, rgba(246, 241, 231, 0.65) 0%, rgba(218, 203, 177, 0.85) 100%);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1; 
+    }
+
+    .content-box, .hero-box {
+      position: relative; z-index: 10; background: rgba(254, 251, 246, 0.96); 
+      padding: 65px 80px; max-width: 1250px; width: 95%;
+      box-shadow: 0 35px 80px rgba(0,0,0,0.40); border: 1px solid rgba(143, 25, 25, 0.18); border-top: 6px solid var(--rome-red);
+      opacity: 0; transform: translateY(30px); transition: opacity 1.2s var(--ease-cinematic), transform 1.2s var(--ease-cinematic);
+      border-radius: 12px;
+    }
+    .hero-box { background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px); border: 3px solid var(--gold-bright); text-align: center; }
+    section.in-view .content-box, section.in-view .split-layout, section.in-view .hero-box { opacity: 1; transform: translateY(0); }
+
+    .hero-title { font-family: 'Cinzel', serif; font-size: 4.8rem; color: var(--rome-red); font-weight: 800; letter-spacing: 4px; line-height: 1.15; }
+    .hero-divider { width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--gold-bright), transparent); margin: 28px 0; }
+    .hero-subtitle { font-family: 'Cinzel', serif; font-size: 1.7rem; letter-spacing: 3px; font-weight: 700; color: var(--text-dark); text-transform: uppercase; margin-bottom: 30px; }
+
+    /* BOX BIOGRAFIE */
+    .bio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; text-align: left; margin-top: 25px; }
+    .bio-card { 
+      background: rgba(255, 253, 249, 0.98); padding: 36px 40px; 
+      border: 1px solid var(--gold-muted); border-top: 5px solid; border-radius: 8px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .bio-card.annibale { border-top-color: var(--carthage-blue); }
+    .bio-card.scipione { border-top-color: var(--rome-red); }
+    
+    .bio-title { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+    .bio-card.annibale .bio-title { color: var(--carthage-blue); }
+    .bio-card.scipione .bio-title { color: var(--rome-red); }
+    .bio-desc { font-size: 1.25rem; line-height: 1.65; color: #332a24; }
+
+    .slide-header { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
+    .slide-badge { background-color: var(--rome-red); color: #fff; font-family: 'Cinzel', serif; padding: 6px 16px; font-size: 1.05rem; letter-spacing: 2px; font-weight: 700; border-radius: 3px; }
+    .slide-speaker { font-style: italic; font-size: 1.35rem; color: var(--rome-red); opacity: 0.95; font-weight: 700; }
+    h1 { font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; color: var(--rome-red); margin-bottom: 8px; line-height: 1.2; }
+    h2 { font-family: 'Cinzel', serif; font-size: 1.55rem; color: var(--gold-dark); letter-spacing: 2px; margin-bottom: 25px; text-transform: uppercase; }
+
+    .split-layout { 
+      display: flex; gap: 45px; align-items: center; max-width: 1750px; width: 96vw; 
+      z-index: 10; opacity: 0; transform: translateY(30px); transition: opacity 1.2s var(--ease-cinematic), transform 1.2s var(--ease-cinematic); 
+    }
+    .split-text { 
+      flex: 1.05; background: rgba(254, 251, 246, 0.96); padding: 55px 65px; 
+      box-shadow: 0 25px 60px rgba(0,0,0,0.25); border-top: 6px solid var(--rome-red); z-index: 20; border-radius: 12px;
+    }
+    
+    .map-board { position: relative; width: 100%; border-radius: 12px; background-color: #f7eed7; border: 2px solid #a68a58; overflow: hidden; aspect-ratio: 1000 / 680; }
+    .map-board img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: fill; display: block; }
+    
+    .map-container canvas { width: 100%; max-width: 100%; height: auto; background-color: #fcf9f2; border: 2px solid #dfd7c8; border-radius: 8px; display: block; margin: 0 auto; box-shadow: inset 0 0 15px rgba(0,0,0,0.06); }
+    
+    .legend { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 18px; padding-top: 20px; font-family: 'DM Sans', sans-serif; font-size: 1.1rem; font-weight: 600; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-box { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; display: inline-block; }
+    .bg-red { background-color: var(--rome-red); }
+    .bg-blue-dark { background-color: var(--carthage-blue); }
+    .bg-black { background-color: #111111; border-radius: 50% !important; }
+    .bg-elephant { background-color: #4a5058; border: 2px solid #d4af37; }
+
+    .strategy-choice { width: 100%; text-align: left; }
+    .strategy-panel { margin-top: 1.5rem; min-height: 130px; line-height: 1.7; font-size: 1.25rem; }
+    
+    .timeline { display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.5rem 0 1.2rem; }
+    .timeline button { min-width: 155px; text-align: left; border: 1px solid var(--line); background: #fffaf0; color: var(--ink); border-radius: 12px; padding: 0.9rem; font: 700 0.95rem 'DM Sans', sans-serif; }
+    .timeline button.active { background: var(--navy); color: #fff; }
+    
+    .option { width: 100%; text-align: left; border: 1px solid var(--line); border-radius: 12px; background: #fffaf0; padding: 1rem 1.2rem; font: 600 1.1rem 'DM Sans', sans-serif; }
+    .option:hover:not(:disabled) { background: #e9ddc8; }
+    .option.correct { background: #d5e9d9; border-color: #28704e; }
+    .option.wrong { background: #f2d7d3; border-color: #a3473c; }
+    
+    .presentation .hero, .presentation .timeline-section, .presentation .quiz-section, .presentation footer { display: none; }
+    .presentation .chapter { padding-top: 2rem; }
+    
+    .timer-bar { height: 8px; background: #d9cbb3; border-radius: 20px; overflow: hidden; }
+    .timer-bar span { display: block; height: 100%; width: 0; background: var(--purple); }
+    
+    .chapter:not([hidden]) { animation: arrive 0.45s ease both; }
+    @keyframes arrive { from { opacity: 0.5; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    
+    @media (max-width: 960px) {
+      .chapter-head, .chapter-grid { grid-template-columns: 1fr; }
+      .chapter-photo { height: 190px; border-radius: 12px; box-shadow: 7px 7px 0 #d6c3a2; }
+      .hero:before { background: #102a2dde; }
+      .bio-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com/3.4.17" type="text/javascript"></script>
+</head>
+<body class="w-full">
+  <header class="topbar">
+   <nav class="shell flex items-center justify-between gap-4" aria-label="Navigazione dei capitoli">
+    <span class="sans font-bold text-base tracking-widest py-3 shrink-0">ROMA <span style="color:#873f42">/</span> CARTAGINE</span>
+    <div class="tabs" id="chapter-nav">
+     <button type="button" class="tab" data-chapter="0" aria-current="step">01 · Protagonisti</button> 
+     <button type="button" class="tab" data-chapter="1">02 · Ticino</button> 
+     <button type="button" class="tab" data-chapter="2">03 · Canne</button> 
+     <button type="button" class="tab" data-chapter="3">04 · Scipione</button> 
+     <button type="button" class="tab" data-chapter="4">05 · Zama</button>
+    </div>
+   </nav>
+   <div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1">
+    <span id="progress-fill" style="width:20%"></span>
+   </div>
+  </header>
+
+  <main>
+   <!-- HERO -->
+   <section class="hero">
+    <img loading="lazy" src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?q=80&w=1920" alt="Rovine classiche al tramonto">
+    <div class="shell py-20">
+     <p class="sans tracking-widest gold font-bold text-lg">218–202 a.C. · IL DUELLO</p>
+     <h1 class="font-bold mt-5">Annibale e Scipione</h1>
+     <p class="mt-6 leading-relaxed text-2xl">Vite Parallele e Rivalità Dottrinale.</p>
+     <p class="sans mt-4 gold text-lg">Cinque voci · cinque capitoli · la storia di una sfida epocale</p>
+     <div class="flex flex-wrap gap-4 mt-10">
+      <button id="explore" type="button" class="btn light">Esplora il percorso</button> 
+      <button id="start-presentation" type="button" class="btn outline">Avvia la presentazione</button>
+     </div>
+    </div>
+   </section>
+
+   <!-- CONTROLLI PRESENTAZIONE -->
+   <div id="presentation-controls" class="shell pt-6 flex flex-wrap items-center gap-3" hidden="">
+    <span class="eyebrow">MODALITÀ PRESENTAZIONE</span> 
+    <button id="exit-presentation" type="button" class="tool">Esci</button> 
+    <button id="timer-start" type="button" class="tool">Avvia timer</button> 
+    <button id="timer-pause" type="button" class="tool" hidden="">Pausa</button> 
+    <button id="timer-reset" type="button" class="tool">Azzera</button> 
+    <span id="timer-display" class="meta font-bold">00:00</span>
+    <div class="timer-bar w-full"><span id="timer-fill"></span></div>
+   </div>
+
+   <!-- CAPITOLO 1 -->
+   <section id="capitolo-1" class="chapter shell" aria-labelledby="chapter-1-title">
+    <div class="chapter-head">
+     <div>
+      <p class="eyebrow mb-3">CAPITOLO 01 / I PROTAGONISTI</p>
+      <h2 id="chapter-1-title" class="font-bold text-5xl">I Protagonisti</h2>
+      <p class="meta mt-4">Damiano Giannini</p>
+     </div>
+     <img class="chapter-photo" loading="lazy" src="https://images.unsplash.com/photo-1604580864964-0462f5d5b1a8?q=80&w=1920" alt="Tempio classico">
+    </div>
+    <div class="chapter-grid">
+     <div>
+      <p class="quote mb-8">La Seconda Guerra Punica non fu solo una successione di battaglie, ma il palcoscenico per un duello psicologico e dottrinale tra due menti militari completamente opposte.</p>
+      <div class="copy">
+       <div class="scene">
+        <h3>Cartagine e Annibale</h3>
+        <p>Da una parte <strong>Annibale Barca</strong>, mente militare di Cartagine. Educato fin da bambino all'odio eterno verso Roma, è cresciuto tra i soldati negli accampamenti spagnoli. Generale colto e maestro della guerra tattica e psicologica, comanda un esercito multietnico formato da mercenari professionisti che combattevano sia per il denaro, sia per il suo immenso carisma.</p>
+       </div>
+       
+       <div class="scene">
+        <h3>Roma e Scipione</h3>
+        <p>Dall'altra <strong>Scipione</strong>, simbolo di Roma e patrizio di altissima discendenza. È l'archetipo del cittadino-soldato, educato alla rigidità e all'onore della Repubblica.</p>
+        <p>Per quindici lunghi anni, Scipione studierà le mosse dell'avversario, stravolgendo la rigida logica militare romana e usando le stesse tecniche del nemico per sconfiggerlo.</p>
+       </div>
+      </div>
+     </div>
+     
+     <aside class="card">
+      <h3 class="mb-6">Biografie</h3>
+      <div class="bio-cards">
+       <div class="bio-card annibale">
+           <div class="bio-title">Annibale Barca (247–183 a.C.)</div>
+           <div class="bio-desc">Dinastia dei Barcidi. Educato negli accampamenti di Spagna. Comanda mercenari d'élite ed è maestro assoluto nella guerra tattica.</div>
+       </div>
+       <div class="bio-card scipione">
+           <div class="bio-title">P. Cornelio Scipione (236–183 a.C.)</div>
+           <div class="bio-desc">Patrizio romano. Sopravvissuto a Canne a diciannove anni. Innova la rigida dottrina romana apprendendo le tecniche del nemico.</div>
+       </div>
+      </div>
+     </aside>
+    </div>
+   </section>
+
+   <!-- CAPITOLO 2 -->
+   <section id="capitolo-2" class="chapter shell" aria-labelledby="chapter-2-title" hidden="">
+    <div class="chapter-head">
+     <div>
+      <p class="eyebrow mb-3">CAPITOLO 02 / LA MAPPA E IL TICINO</p>
+      <h2 id="chapter-2-title" class="font-bold text-5xl">La Mappa e il Ticino</h2>
+      <p class="meta mt-4">Riccardo Nicchi</p>
+     </div>
+     <img class="chapter-photo" loading="lazy" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920" alt="Valico alpino">
+    </div>
+    <div class="chapter-grid">
+     <div>
+      <p class="quote mb-8">Nel 218 a.C., Roma credeva di combattere lontano dall'Italia. Ma Annibale compie l'inimmaginabile: partendo da Cartagena, attraversa i Pirenei e il temibile valico delle Alpi all'inizio dell'inverno.</p>
+      <div class="copy">
+       <div class="scene">
+        <h3>L'Impresa Alpina</h3>
+        <p>È un'impresa ai limiti del possibile. Decine di migliaia di soldati e perfino elefanti africani sono costretti a marciare tra i ghiacci e le imboscate delle tribù di montagna. Annibale perde metà del suo esercito, ma l'impatto psicologico è devastante: sbuca in Pianura Padana, direttamente alle spalle delle legioni romane.</p>
+       </div>
+       
+       <div class="scene">
+        <h3>Battesimo di Sangue: Il Ticino</h3>
+        <p>Il primo vero scontro avviene sul fiume Ticino. La velocissima cavalleria numida di Annibale sfonda le linee e accerchia il console romano Publio Cornelio Scipione, ferendolo gravemente.</p>
+        <p>A pochi metri di distanza c'è suo figlio, appena diciassettenne. Vedendo il console in fin di vita, il giovane Scipione si lancia da solo con coraggio disperato in mezzo ai nemici, riuscendo a salvarlo.</p>
+        <p>Sulla propria pelle, a soli diciassette anni, Scipione capisce che le vecchie tattiche romane sono inefficaci contro la velocità di Annibale. Inizia così il suo studio ossessivo del nemico.</p>
+       </div>
+      </div>
+     </div>
+     
+     <aside class="visual">
+      <h3 class="mb-4 text-3xl">Il Teatro del Mediterraneo</h3>
+      <div class="map-board mt-5">
+       <img src="II-guerra-punica_4.jpg" id="mapImg" alt="Mappa della Seconda Guerra Punica" onerror="this.src='II-guerra-punica.jpg'">
+      </div>
+      <p class="mt-5 text-center italic text-xl" style="color:var(--purple);">La Rotta di Annibale: Da Cartagena alle Alpi</p>
+     </aside>
+    </div>
+   </section>
+
+   <!-- CAPITOLO 3 -->
+   <section id="capitolo-3" class="chapter shell" aria-labelledby="chapter-3-title" hidden="">
+    <div class="chapter-head">
+     <div>
+      <p class="eyebrow mb-3">CAPITOLO 03 / LA LEZIONE DI CANNE</p>
+      <h2 id="chapter-3-title" class="font-bold text-5xl">La Lezione di Canne</h2>
+      <p class="meta mt-4">Mattia Baldisseri</p>
+     </div>
+     <img class="chapter-photo" loading="lazy" src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920" alt="Pianura di Canne">
+    </div>
+    <div class="chapter-grid">
+     <div>
+      <p class="quote mb-8">Puglia, 216 a.C. La battaglia di Canne è il capolavoro tattico assoluto di Annibale, ma è anche il giorno che cambierà in modo indelebile la vita di Scipione.</p>
+      <div class="copy">
+       <div class="scene">
+        <h3>L'Inganno Frontale e la Morsa</h3>
+        <p>Roma schiera l'esercito più grande di sempre, oltre 80.000 uomini, in un blocco compatto progettato per sfondare frontalmente. Annibale, in netta inferiorità numerica, intuisce la strategia avversaria e ordina al proprio centro di arretrare lentamente.</p>
+        <p>I Romani, esaltati, si spingono in avanti incastrandosi da soli in un imbuto. A questo punto scatta la trappola: i veterani africani bloccano i fianchi dell'esercito romano, mentre la cavalleria cartaginese piomba violentemente alle loro spalle. È una mattanza epocale, muoiono circa 70.000 romani.</p>
+       </div>
+       
+       <div class="scene">
+        <h3>Il Giuramento di Canosa</h3>
+        <p>Scipione è tra i pochi superstiti e ripara a Canosa. Lì trova un gruppo di giovani patrizi terrorizzati, pronti a prendere il mare per fuggire dall'Italia credendo Roma ormai spacciata.</p>
+        <p>Sguainando la spada insanguinata, Scipione irrompe e li costringe a giurare in quell'istante di non tradire mai la Repubblica. Salva l'onore di Roma, ma ora ha una certezza: per battere Annibale deve diventare spietato e imprevedibile quanto lui.</p>
+       </div>
+      </div>
+     </div>
+     
+     <aside class="visual simulator">
+      <h3 class="mb-4 text-3xl">La Tattica a Tenaglia</h3>
+      <div class="map-container mt-5">
+       <canvas id="canneCanvas" width="600" height="440"></canvas>
+       <div class="legend mt-6">
+        <div class="legend-item"><div class="legend-box bg-red"></div> Legioni</div>
+        <div class="legend-item"><div class="legend-box bg-blue-dark"></div> Fanteria Punica</div>
+        <div class="legend-item"><div class="legend-box bg-black"></div> Cavalleria</div>
+       </div>
+       <div class="flex flex-wrap gap-4 mt-7 justify-center">
+        <button type="button" id="canne-restart" class="btn outline" style="border: 2px solid var(--purple); color: var(--purple);">Riavvia</button> 
+        <button type="button" id="canne-toggle" class="btn" style="background: var(--purple); color: white;">Pausa / Riprendi</button>
+       </div>
+      </div>
+     </aside>
+    </div>
+   </section>
+
+   <!-- CAPITOLO 4 -->
+   <section id="capitolo-4" class="chapter shell" aria-labelledby="chapter-4-title" hidden="">
+    <div class="chapter-head">
+     <div>
+      <p class="eyebrow mb-3">CAPITOLO 04 / L'ALLIEVO DEL NEMICO</p>
+      <h2 id="chapter-4-title" class="font-bold text-5xl">L'Allievo del Nemico</h2>
+      <p class="meta mt-4">Leonardo Di Giovannantonio</p>
+     </div>
+     <img class="chapter-photo" loading="lazy" src="https://images.unsplash.com/photo-1563514972322-0d127dc75323?q=80&w=1920" alt="Rovine Romane nel Mediterraneo">
+    </div>
+    <div class="chapter-grid">
+     <div>
+      <p class="quote mb-8">Ottenuto il comando in Spagna a soli 24 anni, Scipione passa al contrattacco adottando esattamente le tattiche di Annibale.</p>
+      <div class="copy">
+       <div class="scene">
+        <h3>Sorpresa e Riforme Militari</h3>
+        <p>Inizia con la sorpresa e lo studio dell'ambiente: assalta l'inespugnabile roccaforte di Nuova Cartagine calcolando segretamente le maree, facendo scalare le mura ai suoi uomini dal lato della laguna rimasto completamente sguarnito.</p>
+        <p>Nelle battaglie successive, come a Ilipa, riorganizza l'esercito. Rende i manipoli romani agili e indipendenti, in grado di muoversi lateralmente per accerchiare il nemico. Di fatto, rovescia contro Cartagine la stessa manovra avvolgente subita a Canne.</p>
+       </div>
+       
+       <div class="scene">
+        <h3>Diplomazia e l'Attacco in Africa</h3>
+        <p>Il vero colpo decisivo è diplomatico. Capendo che il motore delle vittorie nemiche è la cavalleria leggera, Scipione stringe un patto segreto con il principe ribelle Massinissa, tirando i Numidi dalla parte di Roma.</p>
+        <p>Infine compie il passo più audace: sfidando i timori del Senato romano, sbarca con l'esercito direttamente in Africa minacciando Cartagine. Preso dal panico, il governo punico richiama Annibale. L'allievo ha appena costretto il maestro a lasciare l'Italia dopo 15 anni incontrastati, per combattere alle proprie condizioni.</p>
+       </div>
+      </div>
+     </div>
+     
+     <aside class="visual">
+      <h3 class="mb-5 text-3xl">Le Manovre di Scipione</h3>
+      <div class="grid gap-3 mt-5">
+       <button type="button" data-strategy="0" class="tool strategy-choice py-3" aria-pressed="false">01 · Guerra Psicologica</button> 
+       <button type="button" data-strategy="1" class="tool strategy-choice py-3" aria-pressed="false">02 · Attacco a N. Cartagine</button> 
+       <button type="button" data-strategy="2" class="tool strategy-choice py-3" aria-pressed="false">03 · Mobilità Manipolare</button> 
+       <button type="button" data-strategy="3" class="tool strategy-choice py-3" aria-pressed="false">04 · Ribaltamento di Canne</button> 
+       <button type="button" data-strategy="4" class="tool strategy-choice py-3" aria-pressed="false">05 · Diplomazia con Massinissa</button> 
+       <button type="button" data-strategy="5" class="tool strategy-choice py-3" aria-pressed="false">06 · Sbarco in Africa</button>
+      </div>
+      <div class="card strategy-panel mt-6">
+       <p class="strategy-detail italic">Seleziona un'azione per approfondire le riforme tattiche introdotte.</p>
+       <p class="strategy-detail font-semibold" hidden="">Scipione cessa la guerra di logoramento e sfrutta mosse audaci e inaspettate per scardinare le certezze del nemico.</p>
+       <p class="strategy-detail font-semibold" hidden="">Sfrutta la bassa marea per guadare la laguna e assaltare le mura ritenute inespugnabili della roccaforte punica in Iberia.</p>
+       <p class="strategy-detail font-semibold" hidden="">Abbandona il blocco rigido: i manipoli ora possono scivolare lateralmente in modo indipendente e allargare il fronte sul campo.</p>
+       <p class="strategy-detail font-semibold" hidden="">A Ilipa, trattiene il centro e fa avanzare velocemente le ali, avvolgendo l'esercito nemico proprio come fece Annibale a Canne.</p>
+       <p class="strategy-detail font-semibold" hidden="">Riesce a sottrarre a Cartagine la potentissima cavalleria leggera, alleandosi con la fazione numida ribelle.</p>
+       <p class="strategy-detail font-semibold" hidden="">Sposta il baricentro del conflitto in Nord Africa, costringendo Annibale a lasciare l'Italia dopo 15 anni incontrastati.</p>
+      </div>
+     </aside>
+    </div>
+   </section>
+
+   <!-- CAPITOLO 5 -->
+   <section id="capitolo-5" class="chapter shell" aria-labelledby="chapter-5-title" hidden="">
+    <div class="chapter-head">
+     <div>
+      <p class="eyebrow mb-3">CAPITOLO 05 / ZAMA E L'EPILOGO</p>
+      <h2 id="chapter-5-title" class="font-bold text-5xl">Zama e l'Epilogo</h2>
+      <p class="meta mt-4">Theo Ferlicca</p>
+     </div>
+     <img class="chapter-photo" loading="lazy" src="image_6fa6f8.jpg" alt="Incisione Elefanti da Guerra" onerror="this.src='https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1920'">
+    </div>
+    <div class="chapter-grid">
+     <div>
+      <p class="quote mb-8">Ottobre 202 a.C., piana di Zama. Il giorno prima dello scontro decisivo, i due più grandi comandanti dell'antichità si trovano faccia a faccia.</p>
+      <div class="copy">
+       <div class="scene">
+        <h3>Il Colloquio e lo Scontro</h3>
+        <p>Incontratisi da soli nella tenda, Annibale propone la pace ricordando a Scipione l'imprevedibilità della Fortuna. Scipione, in posizione di forza, rifiuta freddamente: Cartagine ha tradito i patti, sarà il campo a decidere le sorti della guerra.</p>
+        
+        <p>L'indomani, Scipione annulla il più grande pericolo nemico: ottanta elefanti da guerra. Rompe lo schieramento compatto romano e ordina i manipoli in file parallele, creando ampi corridoi vuoti. Alla carica dei pachidermi, le trombe romane suonano all'unisono: terrorizzati, gli animali sfuggono infilandosi nei corridoi senza travolgere alcun legionario. La cavalleria numida, ora schierata con Roma, sigillerà la battaglia caricando i cartaginesi alle spalle.</p>
+       </div>
+       
+       <div class="scene">
+        <h3>L'Incontro di Efeso e la Fine</h3>
+        <p>I due geni militari diventarono eroi ingombranti per le loro patrie. Invidia e complotti politici li portarono entrambi a fuggire in esilio. Anni dopo, la storia riporta un leggendario incontro in Oriente, a Efeso.</p>
+        <p>Passeggiando insieme, Scipione chiese ad Annibale chi fossero i tre più grandi comandanti della storia. "Primo Alessandro Magno, poi Pirro, e terzo io", rispose Annibale. Sorridendo, Scipione incalzò: "E se mi avessi battuto a Zama?". Guardandolo dritto negli occhi, Annibale replicò: "Allora mi sarei messo al primo posto, anche davanti ad Alessandro".</p>
+        <p>Un epilogo che descrive due uomini che si comprendevano molto di più tra di loro che con i propri popoli. Entrambi moriranno isolati, nello stesso identico anno, il 183 a.C., lontani da casa.</p>
+       </div>
+      </div>
+     </div>
+     
+     <aside class="visual simulator">
+      <h3 class="mb-4 text-3xl">I Corridoi di Zama</h3>
+      <div class="map-container mt-5">
+       <canvas id="zamaCanvas" width="600" height="440"></canvas>
+       <div class="legend mt-6">
+        <div class="legend-item"><div class="legend-box bg-red"></div> Colonne Romane</div>
+        <div class="legend-item"><div class="legend-box bg-elephant"></div> Elefanti da Guerra</div>
+        <div class="legend-item"><div class="legend-box bg-blue-dark"></div> Esercito Punico</div>
+       </div>
+       <div class="flex flex-wrap gap-4 mt-7 justify-center">
+        <button type="button" id="zama-restart" class="btn outline" style="border: 2px solid var(--purple); color: var(--purple);">Riavvia</button> 
+        <button type="button" id="zama-toggle" class="btn" style="background: var(--purple); color: white;">Pausa / Riprendi</button>
+       </div>
+      </div>
+     </aside>
+    </div>
+   </section>
+
+   <!-- CONTROLLI INFERIORI -->
+   <div class="shell flex flex-wrap items-center justify-between gap-3 border-t border-[#d4c7af] py-8 mt-10">
+    <button id="previous" type="button" class="btn light">← Capitolo precedente</button> 
+    <span id="chapter-counter" class="meta font-bold text-lg">Capitolo 1 di 5</span> 
+    <button id="next" type="button" class="btn">Capitolo successivo →</button>
+   </div>
+
+   <!-- CRONOLOGIA -->
+   <section class="timeline-section py-16 mt-10" style="background:#eae3d4">
+    <div class="shell">
+     <p class="eyebrow mb-4">SINTESI TEMPORALE</p>
+     <h2 class="font-bold mb-6 text-4xl">Il percorso, evento dopo evento</h2>
+     <div class="timeline" aria-label="Cronologia del racconto">
+      <button type="button" data-event="0" class="active">218 a.C.</button> 
+      <button type="button" data-event="1">Ticino</button> 
+      <button type="button" data-event="2">216 a.C. Canne</button> 
+      <button type="button" data-event="3">Nuova Cartagine</button> 
+      <button type="button" data-event="4">Ilipa</button> 
+      <button type="button" data-event="5">Sbarco in Africa</button> 
+      <button type="button" data-event="6">Ottobre 202 a.C. Zama</button> 
+      <button type="button" data-event="7">183 a.C.</button>
+     </div>
+     <div class="card mt-5">
+      <p class="timeline-detail text-xl font-semibold">Annibale parte da Cartagena, supera i Pirenei e affronta le Alpi all’inizio dell’inverno perdendo metà dell'esercito.</p>
+      <p class="timeline-detail text-xl font-semibold" hidden="">Scontro di cavalleria in Italia: il console Publio Cornelio Scipione è ferito e il giovane figlio diciassettenne lo salva eroicamente.</p>
+      <p class="timeline-detail text-xl font-semibold" hidden="">Il capolavoro tattico di Annibale in Puglia: l'esercito romano cade nella morsa e subisce una disfatta epocale.</p>
+      <p class="timeline-detail text-xl font-semibold" hidden="">Scipione calcola segretamente le maree e assalta a sorpresa la roccaforte spagnola dal lato della laguna.</p>
+      <p class="timeline-detail text-xl font-semibold" hidden="">Scipione riorganizza le legioni rendendole mobili e avvolge l'esercito nemico usando tattiche simili a quelle puniche.</p>
+      <p class="timeline-detail text-xl font-semibold" hidden="">Scipione alleato con Massinissa attacca direttamente il cuore di Cartagine, forzando Annibale a rientrare.</p>
+      <p class="timeline-detail text-xl font-semibold" hidden="">Colloquio finale e scontro: la carica degli elefanti viene neutralizzata e la cavalleria chiude la battaglia.</p>
+      <p class="timeline-detail text-xl font-semibold" hidden="">Entrambi i grandi generali, esiliati dalle rispettive patrie in Oriente, muoiono nello stesso anno.</p>
+     </div>
+    </div>
+   </section>
+
+   <!-- QUIZ FINALE -->
+   <section class="quiz-section shell py-20">
+    <p class="eyebrow mb-4">VERIFICA FINALE</p>
+    <h2 class="font-bold mb-4 text-4xl">Metti alla prova l'ascolto</h2>
+    <p class="mb-8 text-xl">Cinque domande basate sulla presentazione appena conclusa.</p>
+    <div class="card max-w-4xl">
+     <p id="quiz-progress" class="meta mb-5 font-bold text-xl">Domanda 1 di 5</p>
+     
+     <div class="quiz-item">
+      <h3 class="mb-5 text-2xl">Per cosa combattevano i mercenari multietnici di Annibale?</h3>
+      <div class="grid gap-3">
+       <button type="button" class="option">Per la bandiera di Cartagine</button>
+       <button type="button" class="option" data-correct="true">Per il denaro e per il carisma di Annibale</button>
+       <button type="button" class="option">Per difendere la Spagna</button>
+      </div>
+     </div>
+     
+     <div class="quiz-item" hidden="">
+      <h3 class="mb-5 text-2xl">Quale età aveva Scipione quando salvò il console al Ticino?</h3>
+      <div class="grid gap-3">
+       <button type="button" class="option">Ventiquattro anni</button>
+       <button type="button" class="option" data-correct="true">Diciassette anni</button>
+       <button type="button" class="option">Diciannove anni</button>
+      </div>
+     </div>
+     
+     <div class="quiz-item" hidden="">
+      <h3 class="mb-5 text-2xl">Cosa costrinse a fare Scipione ai superstiti di Canne rifugiati a Canosa?</h3>
+      <div class="grid gap-3">
+       <button type="button" class="option" data-correct="true">A giurare di non tradire mai la Repubblica</button>
+       <button type="button" class="option">A imbarcarsi sulle navi per fuggire</button>
+       <button type="button" class="option">A firmare la resa con Annibale</button>
+      </div>
+     </div>
+     
+     <div class="quiz-item" hidden="">
+      <h3 class="mb-5 text-2xl">Quale alleanza diplomatica stringe Scipione per battere Annibale?</h3>
+      <div class="grid gap-3">
+       <button type="button" class="option">Un patto con le tribù alpine</button>
+       <button type="button" class="option" data-correct="true">Un patto con il principe numida Massinissa</button>
+       <button type="button" class="option">Un accordo con il Senato punico</button>
+      </div>
+     </div>
+     
+     <div class="quiz-item" hidden="">
+      <h3 class="mb-5 text-2xl">Cosa successe agli elefanti a Zama?</h3>
+      <div class="grid gap-3">
+       <button type="button" class="option">Travolsero i manipoli romani schierati a scacchiera</button>
+       <button type="button" class="option" data-correct="true">Sfilarono nei corridoi vuoti, spaventati da corni e trombe</button>
+       <button type="button" class="option">Vennero catturati vivi dalla cavalleria</button>
+      </div>
+     </div>
+     
+     <p id="quiz-feedback" class="mt-6 font-semibold text-2xl"></p>
+     <button id="quiz-next" type="button" class="btn mt-6" hidden="">Prossima domanda →</button>
+     
+     <div id="quiz-result" hidden="">
+      <h3 class="mb-4 text-3xl">Verifica completata</h3>
+      <p id="score" class="mb-6 font-bold text-2xl"></p>
+      <button id="quiz-restart" type="button" class="btn">Ricomincia le domande</button>
+     </div>
+    </div>
+   </section>
+  </main>
+
+  <footer style="background:#183336; color:#f6f0e3" class="py-10 mt-12">
+   <div class="shell text-center opacity-80 text-xl">
+    <p>Annibale e Scipione · Progetto di Storia 2026</p>
+   </div>
+  </footer>
+
+  <script>
+  // SISTEMA LOGICO E NAVIGAZIONE
+  const chapters = [...document.querySelectorAll('.chapter')];
+  const tabs = [...document.querySelectorAll('.tab')];
+  let active = 0, timer = null, elapsed = 0;
+
+  function stopTimer(){ clearInterval(timer); timer = null; document.getElementById('timer-start').hidden = false; document.getElementById('timer-pause').hidden = true; }
+  function updateTimer(){
+    document.getElementById('timer-display').textContent = `${String(Math.floor(elapsed/60)).padStart(2,'0')}:${String(elapsed%60).padStart(2,'0')}`;
+  }
+
+  function go(index, scroll=true){
+    active = Math.max(0, Math.min(4, index)); 
+    stopTimer(); elapsed = 0; updateTimer();
+    
+    chapters.forEach((chapter, i) => chapter.hidden = i !== active);
+    tabs.forEach((tab, i) => { if(i === active) tab.setAttribute('aria-current', 'step'); else tab.removeAttribute('aria-current'); });
+    document.getElementById('progress-fill').style.width = `${(active+1)*20}%`;
+    document.getElementById('chapter-counter').textContent = `Capitolo ${active+1} di 5`;
+    document.getElementById('previous').disabled = active === 0;
+    document.getElementById('next').disabled = active === 4;
+    
+    if(typeof cannaeSim !== 'undefined') { if(active === 2) cannaeSim.start(); else cannaeSim.stop(); }
+    if(typeof zamaSim !== 'undefined') { if(active === 4) zamaSim.start(); else zamaSim.stop(); }
+
+    if(scroll) chapters[active].scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
+
+  tabs.forEach((b, i) => b.addEventListener('click', () => go(i)));
+  document.getElementById('explore').addEventListener('click', () => go(0));
+  document.getElementById('previous').addEventListener('click', () => go(active-1));
+  document.getElementById('next').addEventListener('click', () => go(active+1));
+  
+  document.getElementById('start-presentation').addEventListener('click', () => {
+    document.body.classList.add('presentation'); document.getElementById('presentation-controls').hidden = false; go(0);
+  });
+  document.getElementById('exit-presentation').addEventListener('click', () => {
+    document.body.classList.remove('presentation'); document.getElementById('presentation-controls').hidden = true; go(active);
+  });
+
+  document.getElementById('timer-start').addEventListener('click', () => {
+    if(timer) return;
+    document.getElementById('timer-start').hidden = true; document.getElementById('timer-pause').hidden = false;
+    timer = setInterval(() => { elapsed++; updateTimer(); }, 1000);
+  });
+  document.getElementById('timer-pause').addEventListener('click', stopTimer);
+  document.getElementById('timer-reset').addEventListener('click', () => { stopTimer(); elapsed = 0; updateTimer(); });
+
+  const strategyButtons = [...document.querySelectorAll('[data-strategy]')];
+  strategyButtons.forEach(b => b.addEventListener('click', () => {
+    const i = Number(b.dataset.strategy);
+    strategyButtons.forEach(x => x.setAttribute('aria-pressed', String(x===b)));
+    document.querySelectorAll('.strategy-detail').forEach((p, n) => p.hidden = n !== i + 1);
+  }));
+
+  const eventButtons = [...document.querySelectorAll('[data-event]')];
+  eventButtons.forEach(b => b.addEventListener('click', () => {
+    const i = Number(b.dataset.event);
+    eventButtons.forEach(x => x.classList.toggle('active', x===b));
+    document.querySelectorAll('.timeline-detail').forEach((p, n) => p.hidden = n !== i);
+  }));
+
+  const quizItems = [...document.querySelectorAll('.quiz-item')];
+  let question = 0, score = 0, answered = false;
+  
+  quizItems.forEach((item, index) => item.querySelectorAll('.option').forEach(button => button.addEventListener('click', () => {
+    if(answered || question !== index) return;
+    answered = true; 
+    const isCorrect = button.hasAttribute('data-correct');
+    if(isCorrect) score++;
+    
+    item.querySelectorAll('.option').forEach(opt => {
+      opt.disabled = true;
+      if(opt.hasAttribute('data-correct')) opt.classList.add('correct');
+    });
+    if(!isCorrect) button.classList.add('wrong');
+    
+    document.getElementById('quiz-feedback').textContent = isCorrect ? 'Esatto!' : 'Sbagliato.';
+    document.getElementById('quiz-feedback').style.color = isCorrect ? '#28704e' : '#a3473c';
+    document.getElementById('quiz-next').hidden = false;
+  })));
+
+  document.getElementById('quiz-next').addEventListener('click', () => {
+    if(!answered) return;
+    quizItems[question].hidden = true; question++; answered = false;
+    document.getElementById('quiz-feedback').textContent = '';
+    document.getElementById('quiz-next').hidden = true;
+    
+    if(question < 5){
+      quizItems[question].hidden = false;
+      document.getElementById('quiz-progress').textContent = `Domanda ${question+1} di 5`;
+    } else {
+      document.getElementById('quiz-progress').hidden = true;
+      document.getElementById('quiz-result').hidden = false;
+      document.getElementById('score').textContent = `Hai indovinato ${score} risposte su 5.`;
+    }
+  });
+
+  document.getElementById('quiz-restart').addEventListener('click', () => {
+    question = 0; score = 0; answered = false;
+    quizItems.forEach((item, i) => { 
+        item.hidden = i !== 0; 
+        item.querySelectorAll('.option').forEach(b => { b.disabled = false; b.classList.remove('correct', 'wrong'); });
+    });
+    document.getElementById('quiz-result').hidden = true;
+    document.getElementById('quiz-progress').hidden = false;
+    document.getElementById('quiz-progress').textContent = 'Domanda 1 di 5';
+    document.getElementById('quiz-feedback').textContent = '';
+  });
+
+  // MOTORE PARTICELLE CANVAS GIGANTI
+  class ParticleArmy {
+      constructor(canvasId) {
+          this.canvas = document.getElementById(canvasId);
+          if (!this.canvas) return;
+          this.ctx = this.canvas.getContext('2d');
+          this.w = this.canvas.width; this.h = this.canvas.height;
+          this.time = 0; this.running = false; this.animId = null; this.particles = [];
+      }
+      init() { this.particles = []; this.createArmies(); }
+      start() { if (!this.running) { this.running = true; if(this.animId) cancelAnimationFrame(this.animId); this.loop(); } }
+      stop() { this.running = false; if(this.animId) cancelAnimationFrame(this.animId); }
+      toggle() { this.running ? this.stop() : this.start(); }
+      restart() { this.time = 0; this.init(); if (!this.running) this.start(); }
+      drawGrid() {
+          this.ctx.strokeStyle = 'rgba(140, 100, 40, 0.08)';
+          for (let x = 0; x < this.w; x += 30) { this.ctx.beginPath(); this.ctx.moveTo(x, 0); this.ctx.lineTo(x, this.h); this.ctx.stroke(); }
+          for (let y = 0; y < this.h; y += 30) { this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(this.w, y); this.ctx.stroke(); }
+      }
+      loop() {
+          if (!this.running) return;
+          this.ctx.clearRect(0, 0, this.w, this.h);
+          this.drawGrid();
+          this.particles.forEach(p => {
+              if(!p.alive) return; 
+              this.updateParticle(p, this.time);
+              if (p.type === 'elephant') { this.drawWarElephant(p.x, p.y, p.size); } 
+              else {
+                  this.ctx.fillStyle = p.color;
+                  if(p.shape === 'circle') { this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); this.ctx.fill(); } 
+                  else { this.ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size); }
+              }
+          });
+          this.time += 0.5; 
+          if (this.time > this.maxTime()) { this.time = 0; this.init(); }
+          this.animId = requestAnimationFrame(() => this.loop());
+      }
+      createArmies() {} updateParticle(p, time) {} maxTime() { return 950; }
+  }
+
+  class CannaeSim extends ParticleArmy {
+      createArmies() {
+          const addSwarm = (type, color, count, startX, startY, width, height, shape='rect', size=4) => {
+              for(let i=0; i<count; i++) {
+                  this.particles.push({ 
+                      type: type, color: color, shape: shape, size: size, alive: true, 
+                      ox: startX + Math.random() * width, oy: startY + Math.random() * height, 
+                      x: 0, y: 0, slotIndex: i, count: count, 
+                      noiseX: (Math.random() - 0.5) * 3, noiseY: (Math.random() - 0.5) * 3, 
+                      speedMulti: 0.85 + Math.random() * 0.3 
+                  });
+              }
+          };
+          addSwarm('roman', '#8f1919', 420, 220, 60, 160, 110); 
+          addSwarm('carth_center', '#446d9b', 180, 190, 190, 220, 35); 
+          addSwarm('african_l', '#1b3558', 110, 100, 150, 45, 95); 
+          addSwarm('african_r', '#1b3558', 110, 455, 150, 45, 95); 
+          addSwarm('cav_l', '#111111', 65, 40, 120, 40, 70, 'circle', 4.5); 
+          addSwarm('cav_r', '#111111', 65, 520, 120, 40, 70, 'circle', 4.5); 
+      }
+      updateParticle(p, t) {
+          let microX = Math.sin(t * 0.03 + p.noiseX) * 0.35; let microY = Math.cos(t * 0.03 + p.noiseY) * 0.35;
+          let pCenter = 300, pCY = 220;
+          let pAdv = Math.min(Math.max((t - 30) / 180, 0), 1) * p.speedMulti;
+          let pFlank = Math.min(Math.max((t - 160) / 160, 0), 1); 
+          let pSlaughter = Math.min(Math.max((t - 420) / 380, 0), 1);  
+
+          if (p.type === 'roman') {
+              let tY = p.oy + (pAdv * 85);
+              let tX = p.ox - ((p.ox - 300) * 0.65 * pFlank);
+              tX -= (tX - pCenter) * 0.5 * pSlaughter; tY -= (tY - pCY) * 0.5 * pSlaughter;
+              p.x = tX + microX; p.y = tY + microY;
+              if (pSlaughter > 0 && p.alive && Math.hypot(p.x - pCenter, p.y - pCY) > (80 - (72 * pSlaughter)) + (p.noiseX * 1.2)) p.alive = false; 
+          } 
+          else if (p.type === 'carth_center') {
+              let pushBack = Math.max(0, (110 - Math.abs(p.ox - 300)) * 1.25 * pAdv);
+              let tX = p.ox, tY = p.oy + pushBack;
+              let a = Math.atan2(tY - pCY, tX - pCenter);
+              tX -= Math.cos(a) * 70 * pSlaughter; tY -= Math.sin(a) * 70 * pSlaughter;
+              p.x = tX + microX; p.y = tY + microY;
+          } 
+          else if (p.type.includes('african')) {
+              let dir = p.type === 'african_l' ? 1 : -1;
+              let tX = p.ox + (dir * pFlank * 95), tY = p.oy + (pAdv * 30); 
+              let a = Math.atan2(tY - pCY, tX - pCenter);
+              tX -= Math.cos(a) * 70 * pSlaughter; tY -= Math.sin(a) * 70 * pSlaughter;
+              p.x = tX + microX; p.y = tY + microY;
+          }
+          else if (p.type.includes('cav')) {
+              let isLeft = p.type === 'cav_l';
+              let pSweep = Math.min(Math.max((t - 80) / 140, 0), 1);   
+              let pEncircle = Math.min(Math.max((t - 220) / 150, 0), 1); 
+              let fX = isLeft ? 100 : 500, fY = 70 + (p.slotIndex % 3) * 12;
+              let nI = p.slotIndex / p.count; 
+              let a = isLeft ? (Math.PI - (nI * (Math.PI * 0.5))) : (0 - (nI * (Math.PI * 0.5)));
+              let radius = 80 + ((p.slotIndex % 3) * 8) - (pSlaughter * 30);
+              let tX = pCenter + Math.cos(a) * radius, tY = pCY - Math.abs(Math.sin(a)) * radius;
+
+              let cX, cY;
+              if (pEncircle === 0) { cX = p.ox + (fX - p.ox) * pSweep; cY = p.oy + (fY - p.oy) * pSweep; } 
+              else { cX = fX + (tX - fX) * pEncircle; cY = fY + (tY - fY) * pEncircle; }
+              p.x = cX + (microX * 0.6); p.y = cY + (microY * 0.6);
+          }
+      }
+  }
+
+  class ZamaSim extends ParticleArmy {
+      createArmies() {
+          for (let col = 0; col < 6; col++) {
+              for (let row = 0; row < 5; row++) {
+                  for(let i=0; i<15; i++) {
+                      this.particles.push({ type: 'roman', color: '#8f1919', shape: 'rect', size: 3.5, alive: true, ox: 100 + col * 75 + Math.random() * 25, oy: 200 + row * 35 + Math.random() * 15, x: 0, y: 0, noiseX: Math.random()*10 });
+                  }
+              }
+          }
+          for (let e = 0; e < 5; e++) {
+              this.particles.push({ type: 'elephant', color: '#4a5058', shape: 'elephant', size: 1, alive: true, ox: 144 + e * 75, oy: 45 + (Math.random() * 20), x: 0, y: 0, speedMulti: 0.88 + Math.random() * 0.25 });
+          }
+      }
+      drawWarElephant(x, y, scale = 1) {
+          this.ctx.save(); this.ctx.translate(x, y);
+          this.ctx.fillStyle = '#4a5058'; this.ctx.beginPath(); this.ctx.ellipse(0, 0, 14 * scale, 18 * scale, 0, 0, Math.PI * 2); this.ctx.fill();
+          this.ctx.fillStyle = '#8f1919'; this.ctx.fillRect(-8 * scale, -8 * scale, 16 * scale, 14 * scale);
+          this.ctx.strokeStyle = '#d4af37'; this.ctx.lineWidth = 1; this.ctx.strokeRect(-8 * scale, -8 * scale, 16 * scale, 14 * scale);
+          this.ctx.fillStyle = '#9c8030'; this.ctx.fillRect(-5 * scale, -4 * scale, 10 * scale, 8 * scale);
+          this.ctx.fillStyle = '#555c66'; this.ctx.beginPath(); this.ctx.arc(0, 15 * scale, 9 * scale, 0, Math.PI * 2); this.ctx.fill();
+          this.ctx.fillStyle = '#3e444c'; this.ctx.beginPath(); this.ctx.ellipse(-10 * scale, 13 * scale, 5 * scale, 3 * scale, -0.4, 0, Math.PI * 2); this.ctx.ellipse(10 * scale, 13 * scale, 5 * scale, 3 * scale, 0.4, 0, Math.PI * 2); this.ctx.fill();
+          this.ctx.strokeStyle = '#555c66'; this.ctx.lineWidth = 3.5 * scale; this.ctx.lineCap = 'round'; this.ctx.beginPath(); this.ctx.moveTo(0, 18 * scale); this.ctx.quadraticCurveTo(2 * scale, 24 * scale, -1 * scale, 27 * scale); this.ctx.stroke();
+          this.ctx.strokeStyle = '#fffbf0'; this.ctx.lineWidth = 2 * scale; this.ctx.beginPath(); this.ctx.moveTo(-4 * scale, 18 * scale); this.ctx.quadraticCurveTo(-9 * scale, 22 * scale, -11 * scale, 26 * scale); this.ctx.moveTo(4 * scale, 18 * scale); this.ctx.quadraticCurveTo(9 * scale, 22 * scale, 11 * scale, 26 * scale); this.ctx.stroke();
+          this.ctx.restore();
+      }
+      updateParticle(p, t) {
+          if (p.type === 'roman') { p.x = p.ox + Math.sin(t * 0.03 + p.noiseX) * 0.35; p.y = p.oy; } 
+          else if (p.type === 'elephant') {
+              p.x = p.ox; p.y = p.oy + (Math.min(Math.max((t - 40) / 250, 0), 1) * p.speedMulti * 400); 
+              if (p.y > 180 && p.y < 350 && Math.random() > 0.85) {
+                  this.ctx.strokeStyle = '#d4af37'; this.ctx.lineWidth = 1.8; this.ctx.beginPath();
+                  this.ctx.moveTo(p.x - 18, p.y + Math.random()*15); this.ctx.lineTo(p.x - 5, p.y + Math.random()*15);
+                  this.ctx.moveTo(p.x + 32, p.y + Math.random()*15); this.ctx.lineTo(p.x + 19, p.y + Math.random()*15); this.ctx.stroke();
+              }
+          }
+      }
+      maxTime() { return 450; }
+  }
+
+  function handleMapError(img) {
+      const sources = ["II-guerra-punica_4.jpg", "II-guerra-punica_3.jpg", "II-guerra-punica_2.jpg", "II-guerra-punica.jpg"];
+      let attempt = parseInt(img.dataset.attempt || "0");
+      if (attempt < sources.length) { img.dataset.attempt = attempt + 1; img.src = sources[attempt]; } 
+      else { document.getElementById('uploadPrompt').style.display = 'flex'; }
+  }
+
+  function loadLocalMap(input) {
+      if (input.files && input.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(e) { document.getElementById('mapImg').src = e.target.result; document.getElementById('uploadPrompt').style.display = 'none'; };
+          reader.readAsDataURL(input.files[0]);
+      }
+  }
+
+  const cannaeSim = new CannaeSim('canneCanvas'); cannaeSim.init();
+  const zamaSim = new ZamaSim('zamaCanvas'); zamaSim.init();
+
+  document.getElementById('canne-restart').addEventListener('click', () => cannaeSim.restart());
+  document.getElementById('canne-toggle').addEventListener('click', () => cannaeSim.toggle());
+  document.getElementById('zama-restart').addEventListener('click', () => zamaSim.restart());
+  document.getElementById('zama-toggle').addEventListener('click', () => zamaSim.toggle());
+
+  // Init
+  go(0, false);
+  </script>
+</body>
+</html>
